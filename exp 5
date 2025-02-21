@@ -1,0 +1,209 @@
+
+//problem 1
+import java.util.ArrayList;
+import java.util.List;
+
+public class SumOfIntegers {
+
+    public static void main(String[] args) {
+        String[] inputStrings = {"10", "20", "30", "40", "50"};
+
+        List<Integer> integerList = parseStringsToIntegers(inputStrings);
+        int sum = calculateSum(integerList);
+
+        System.out.println("The sum of the integers is: " + sum);
+    }
+
+    public static List<Integer> parseStringsToIntegers(String[] strings) {
+        List<Integer> integers = new ArrayList<>();
+        for (String str : strings) {
+            integers.add(Integer.parseInt(str)); 
+        }
+        return integers;
+    }
+
+    public static int calculateSum(List<Integer> integers) {
+        int sum = 0;
+        for (Integer num : integers) {
+            // Unboxing: converting Integer to int
+            sum += num; // Autoboxing happens when adding to sum
+        }
+        return sum;
+    }
+    }
+
+
+// problem 2
+    import java.io.*;
+
+// Student class implementing Serializable interface
+class Student implements Serializable {
+    private static final long serialVersionUID = 1L; // Unique identifier for serialization
+    private String name;
+    private int age;
+    private String studentId;
+
+    // Constructor
+    public Student(String name, int age, String studentId) {
+        this.name = name;
+        this.age = age;
+        this.studentId = studentId;
+    }
+
+    // Getters
+    public String getName() {
+        return name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", age=" + age +
+                ", studentId='" + studentId + '\'' +
+                '}';
+    }
+}
+public class StudentSerialization {
+    public static void serializeStudent(Student student, String filename) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(filename))) {
+            oos.writeObject(student);
+            System.out.println("Student object serialized successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public static Student deserializeStudent(String filename) {
+        Student student = null;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(filename))) {
+            student = (Student) ois.readObject();
+            System.out.println("Student object deserialized successfully.");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return student;
+    }
+
+    public static void main(String[] args) {
+        Student student = new Student("John Doe", 20, "S12345");
+
+        String filename = "student.ser";
+        serializeStudent(student, filename);
+
+        Student deserializedStudent = deserializeStudent(filename);
+        System.out.println("Deserialized Student: " + deserializedStudent);
+    }
+}
+
+
+// problem 3
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Employee class
+class Employee implements Serializable {
+    private static final long serialVersionUID = 1L; // Unique identifier for serialization
+    private String name;
+    private String employeeId;
+    private String designation;
+    private double salary;
+
+    // Constructor
+    public Employee(String name, String employeeId, String designation, double salary) {
+        this.name = name;
+        this.employeeId = employeeId;
+        this.designation = designation;
+        this.salary = salary;
+    }
+    public String getName() {
+        return name;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "name='" + name + '\'' +
+                ", employeeId='" + employeeId + '\'' +
+                ", designation='" + designation + '\'' +
+                ", salary=" + salary +
+                '}';
+    }
+}
+
+public class EmployeeManagement {
+
+    private static final String FILE_NAME = "employees.ser";
+    public static void addEmployee() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Employee Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter Employee ID: ");
+        String employeeId = scanner.nextLine();
+        System.out.print("Enter Designation: ");
+        String designation = scanner.nextLine();
+        System.out.print("Enter Salary: ");
+        double salary = scanner.nextDouble();
+
+        Employee employee = new Employee(name, employeeId, designation, salary);
+        List<Employee> employees = readEmployees();
+        employees.add(employee);
+        writeEmployees(employees);
+        System.out.println("Employee added successfully.");
+    }
+
+    public static void displayEmployees() {
+        List<Employee> employees = readEmployees();
+        if (employees.isEmpty()) {
+            System.out.println("No employees found.");
+        } else {
+            System.out.println("Employee Details:");
+            for (Employee employee : employees) {
+                System.out.println(employee);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Employee> readEmployees() {
+        List<Employee> employees = new ArrayList<>();
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
+            employees = (List<Employee>) ois.readObject();
+        } catch (FileNotFoundException e) {
+            // File not found, return empty list
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return employees;
+    }
+
+    private static void writeEmployees(List<Employee> employees) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
+            oos.writeObject(employees);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+   
